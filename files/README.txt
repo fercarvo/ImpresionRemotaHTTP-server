@@ -1,0 +1,1 @@
+En esta carpeta van los archivos que se envian a imprimir, se eliminan al terminar

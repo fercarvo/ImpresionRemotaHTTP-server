@@ -14,19 +14,22 @@ router.post('/print/:cliente', upload.single('printer_pdf_file'), async function
     try {
         var archivo = req.file.filename
         var impresora = req.body.printer
-        var cliente = req.params.cliente
 
         //Se obtiene el cliente websocket conectado
-        var cliente = conectados.get(cliente)
+        var cliente = conectados.get(req.params.cliente)
 
         if (cliente === undefined) 
-            return res.status(400).send(`No se encuentra conectado el cliente con nombre ${cliente}`);
+            return res.status(400).send(`No se encuentra conectado el cliente con nombre ${req.params.cliente}`);
 
         var payload = await fileToBase64(`./files/${archivo}`)
 
         var respuesta = await new Promise(resolve => {
             //Se envia el archivo en base64 al cliente y se espera por la respuesta
-            cliente.emit('imprimir', { file_name: archivo, file_base64: payload, impresora }, socket_res => resolve(socket_res))
+            cliente.emit('imprimir', { 
+                file_name: archivo, 
+                file_base64: payload, 
+                impresora 
+            }, socket_res => resolve(socket_res))
         })
 
         if (respuesta.exito) {
